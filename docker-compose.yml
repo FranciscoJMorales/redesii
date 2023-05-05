@@ -1,0 +1,41 @@
+version: '1.0'
+
+services:
+  mongo-users:
+    image: mongo
+    ports:
+        - 27018:27017
+    networks:
+      - redes
+  mongo-groups:
+    image: mongo
+    ports:
+        - 27019:27017
+    networks:
+      - redes
+  api-users:
+    image: fjmorales/api-users-test
+    depends_on:
+      - mongo-users
+    networks:
+      - redes
+  api-groups:
+    image: fjmorales/api-groups-test
+    depends_on:
+      - mongo-groups
+    networks:
+      - redes
+  reverse-proxy:
+    image: fjmorales/reverse-proxy-test
+    ports:
+      - 8080:80
+      - 8081:443
+    depends_on:
+      - api-users
+      - api-groups
+    networks:
+      - redes
+
+networks:
+  redes:
+    driver: bridge
